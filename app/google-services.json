@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_id": "wrekt-e3786",
+    "project_number": "822049649082",
+    "name": "Wrekt"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822049649082:android:6de7986c7b69fde9",
+        "client_id": "android:com.citrix.wrekt",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.citrix.wrekt",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "822049649082-859qtvkt3n6l8dcg8nan4h6850r6vtqr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.citrix.wrekt",
+            "certificate_hash": "04D6A93B70E832FB936615DF37B87E6CD48636DD"
+          }
+        },
+        {
+          "client_id": "822049649082-2nr3ksqse4r05h2f5nso1or7uqrnib0q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

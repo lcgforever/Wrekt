@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Wrekt</string>
+
+    <!-- Action title -->
+    <string name="action_logout">Logout</string>
+
+    <!-- Toast message -->
+    <string name="login_expired_message">Your current session has expired. Please login again.</string>
+    <string name="login_error_message">Login failed. Please try again.</string>
+    <string name="logout_error_message">Logout failed. Please try again.</string>
+
+    <!-- Main Activity -->
+    <string name="main_activity_title">Main</string>
+    <string name="logout_dialog_message">Do you want to logout?</string>
+
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="roboto_light" translatable="false">sans-serif-light</string>
+    <string name="roboto_medium" translatable="false">sans-serif</string>
+
+</resources>
