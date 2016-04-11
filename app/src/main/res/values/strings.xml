@@ -5,14 +5,52 @@
 
     <!-- Action title -->
     <string name="action_logout">Logout</string>
+    <string name="action_about_app">About App</string>
+    <string name="action_settings">Settings</string>
 
-    <!-- Toast message -->
-    <string name="login_expired_message">Your current session has expired. Please login again.</string>
-    <string name="login_error_message">Login failed. Please try again.</string>
-    <string name="logout_error_message">Logout failed. Please try again.</string>
+    <!-- Activity title -->
+    <string name="activity_main_title">Channels</string>
+    <string name="activity_about_app_title">About App</string>
+    <string name="activity_settings_title">Settings</string>
+    <string name="activity_channel_info_title">Channel Info</string>
+
+    <!-- About App Activity -->
+    <string name="app_version">Version</string>
+    <string name="copyright">Copyright</string>
+
+    <!-- Settings Activity -->
+    <string name="login_method">Login Method</string>
+
+    <!-- Login Activity -->
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password (6 or more)</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="ime_action_next_text">Next</string>
+    <string name="sign_up_text">Sign Up</string>
+    <string name="login_text">Login</string>
+    <string name="or_text">Or</string>
+    <string name="no_account_text">New here?</string>
+    <string name="has_account_text">Have account?</string>
+    <string name="login_progress_dialog_message">Logging in&#8230;</string>
 
     <!-- Main Activity -->
-    <string name="main_activity_title">Main</string>
     <string name="logout_dialog_message">Do you want to logout?</string>
+    <string name="tab_all_channels_title">All Channels</string>
+    <string name="tab_my_channels_title">My Channels</string>
+    <string name="all_channel_list_empty_message">There are no channels right now.</string>
+    <string name="my_channel_list_empty_message">You have not subscribed to any channel.</string>
+
+    <!-- Error message -->
+    <string name="login_expired_message">Your current session has expired. Please login again.</string>
+    <string name="login_error_message">Login failed. Please try again.</string>
+    <string name="login_firebase_error_message">Cannot login. %s</string>
+    <string name="auth_with_firebase_error_message">Cannot authenticate with Firebase. Please try login again.</string>
+    <string name="logout_error_message">Logout failed. Please try again.</string>
+    <string name="email_format_invalid_message">Email format invalid.</string>
+    <string name="password_invalid_message">Password invalid.</string>
+    <string name="confirm_password_invalid_message">Password does not match.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -6,6 +6,7 @@ import com.citrix.wrekt.di.component.AppComponent;
 import com.citrix.wrekt.di.component.DaggerAppComponent;
 import com.citrix.wrekt.di.module.AppModule;
 import com.facebook.FacebookSdk;
+import com.firebase.client.Firebase;
 
 public class WrektApplication extends Application {
 
@@ -16,6 +17,9 @@ public class WrektApplication extends Application {
         super.onCreate();
 
         createAppComponentAndInject();
+
+        // Initialize Firebase SDK
+        Firebase.setAndroidContext(this);
 
         // Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this);

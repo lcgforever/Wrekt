@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- About App Keys -->
+    <string name="key_app_version" translatable="false">key_app_version</string>
+    <string name="value_app_version" translatable="false">%1$s (%2$s)</string>
+    <string name="key_copyright" translatable="false">key_copyright</string>
+
+    <!-- Settings Keys -->
+    <string name="key_login_method" translatable="false">key_login_method</string>
+    <string name="key_logout" translatable="false">key_logout</string>
+    <string name="login_method_facebook" translatable="false">Facebook</string>
+    <string name="login_method_google_plus" translatable="false">Google Plus</string>
+    <string name="login_method_g2m" translatable="false">GoToMeeting</string>
+    <string name="login_method_wrekt" translatable="false">Wrekt</string>
+
+    <!-- Auth Clients -->
     <string name="facebook_app_id" translatable="false">1672376459678662</string>
+    <string name="auth_client_facebook" translatable="false">facebook</string>
+
+    <!-- Firebase -->
+    <string name="firebase_base_url" translatable="false">https://wrekt.firebaseio.com</string>
+    <string name="firebase_channels_url" translatable="false">%s/channels</string>
+
+    <!-- General -->
+    <string name="email_format_regex">^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$</string>
 
 </resources>

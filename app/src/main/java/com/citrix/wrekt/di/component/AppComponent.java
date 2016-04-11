@@ -6,6 +6,7 @@ import com.citrix.wrekt.di.module.ActivityModule;
 import com.citrix.wrekt.di.module.AppModule;
 import com.citrix.wrekt.di.module.BusModule;
 import com.citrix.wrekt.di.module.DataModule;
+import com.citrix.wrekt.di.module.FirebaseModule;
 import com.citrix.wrekt.di.module.LoginModule;
 
 import javax.inject.Singleton;
@@ -18,7 +19,8 @@ import dagger.Component;
                 AppModule.class,
                 DataModule.class,
                 BusModule.class,
-                LoginModule.class
+                LoginModule.class,
+                FirebaseModule.class
         }
 )
 public interface AppComponent {
