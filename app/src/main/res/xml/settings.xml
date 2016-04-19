@@ -3,7 +3,15 @@
 
     <Preference
         android:key="@string/key_login_method"
-        android:title="@string/login_method" />
+        android:title="@string/setting_login_method" />
+
+    <Preference
+        android:key="@string/key_user_email"
+        android:title="@string/setting_user_email" />
+
+    <Preference
+        android:key="@string/key_username"
+        android:title="@string/setting_username" />
 
     <Preference
         android:key="@string/key_logout"

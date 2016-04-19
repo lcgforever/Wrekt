@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:elevation="@dimen/toolbar_elevation">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -19,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
+            app:collapsedTitleTextAppearance="@style/Toolbar.SmallTextAppearance"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
@@ -43,7 +43,15 @@
                 app:contentInsetStart="0dp"
                 app:layout_collapseMode="pin"
                 app:navigationIcon="@drawable/ic_navigate_back_white"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+                app:titleTextAppearance="@style/Toolbar.SmallTextAppearance">
+
+                <android.support.v7.widget.ActionMenuView
+                    android:id="@+id/action_menu_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="top|end"
+                    android:gravity="center"
+                    android:padding="10dp" />
 
             </android.support.v7.widget.Toolbar>
 
@@ -51,28 +59,187 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/channel_swipe_refresh_layout"
+    <ViewSwitcher
+        android:id="@+id/main_content_view_switcher"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v4.widget.NestedScrollView
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:indeterminate="true"
+                android:minHeight="20dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:fontFamily="@string/roboto_light"
+                android:gravity="center"
+                android:text="@string/loading_text"
+                android:textColor="@color/primary_text"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/channel_swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical"
+                    android:paddingBottom="16dp"
+                    android:paddingTop="40dp">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/channel_name_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:drawableLeft="@drawable/ic_name"
+                        android:drawablePadding="16dp"
+                        android:drawableStart="@drawable/ic_name"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
+                        android:maxLines="2"
+                        android:padding="16dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Primary" />
 
-        </android.support.v4.widget.NestedScrollView>
+                    <TextView
+                        android:id="@+id/channel_create_time_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:drawableLeft="@drawable/ic_create_time"
+                        android:drawablePadding="16dp"
+                        android:drawableStart="@drawable/ic_create_time"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
+                        android:maxLines="2"
+                        android:padding="16dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Primary" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+                    <TextView
+                        android:id="@+id/channel_category_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:drawableLeft="@drawable/ic_category"
+                        android:drawablePadding="16dp"
+                        android:drawableStart="@drawable/ic_category"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
+                        android:maxLines="2"
+                        android:padding="16dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Primary" />
+
+                    <TextView
+                        android:id="@+id/channel_admin_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:drawableLeft="@drawable/ic_admin"
+                        android:drawablePadding="16dp"
+                        android:drawableStart="@drawable/ic_admin"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
+                        android:maxLines="2"
+                        android:padding="16dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Primary" />
+
+                    <RelativeLayout
+                        android:id="@+id/channel_member_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:id="@+id/channel_member_details_image_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_enter" />
+
+                        <TextView
+                            android:id="@+id/channel_member_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_toLeftOf="@id/channel_member_details_image_view"
+                            android:layout_toStartOf="@id/channel_member_details_image_view"
+                            android:drawableLeft="@drawable/ic_group"
+                            android:drawablePadding="16dp"
+                            android:drawableStart="@drawable/ic_group"
+                            android:ellipsize="end"
+                            android:gravity="center_vertical"
+                            android:maxLines="1"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Primary" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:id="@+id/channel_description_image_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:src="@drawable/ic_description" />
+
+                        <TextView
+                            android:id="@+id/channel_description_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_toEndOf="@id/channel_description_image_view"
+                            android:layout_toRightOf="@id/channel_description_image_view"
+                            android:gravity="center_vertical"
+                            android:lineSpacingExtra="4dp"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Primary" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </android.support.v4.widget.NestedScrollView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </ViewSwitcher>
 
     <include layout="@layout/layout_channel_info_fab" />
 

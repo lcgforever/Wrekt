@@ -10,7 +10,10 @@ import com.citrix.wrekt.R;
 import com.citrix.wrekt.WrektApplication;
 import com.citrix.wrekt.data.LoginState;
 import com.citrix.wrekt.data.pref.IntegerPreference;
+import com.citrix.wrekt.data.pref.StringPreference;
 import com.citrix.wrekt.di.annotation.LoginStatePref;
+import com.citrix.wrekt.di.annotation.UserEmailPref;
+import com.citrix.wrekt.di.annotation.UsernamePref;
 import com.citrix.wrekt.di.component.ActivityComponent;
 import com.citrix.wrekt.di.module.ActivityModule;
 
@@ -22,6 +25,14 @@ public class SettingsFragment extends PreferenceFragment
     @Inject
     @LoginStatePref
     IntegerPreference loginStatePref;
+
+    @Inject
+    @UsernamePref
+    StringPreference usernamePref;
+
+    @Inject
+    @UserEmailPref
+    StringPreference userEmailPref;
 
     private ActivityComponent activityComponent;
     private SettingsClickListener settingsClickListener;
@@ -67,8 +78,34 @@ public class SettingsFragment extends PreferenceFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        findPreference(getString(R.string.key_username))
+                .setOnPreferenceClickListener(this);
+
+        findPreference(getString(R.string.key_logout))
+                .setOnPreferenceClickListener(this);
+
+        updateViews();
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        String key = preference.getKey();
+
+        if (key.equals(getString(R.string.key_username))) {
+            settingsClickListener.onUsernameSettingClicked();
+            return true;
+        } else if (key.equals(getString(R.string.key_logout))) {
+            settingsClickListener.onLogoutSettingClicked();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void updateViews() {
+        LoginState loginState = LoginState.from(loginStatePref.get());
         String loginMethodValue;
-        switch (LoginState.from(loginStatePref.get())) {
+        switch (loginState) {
             case FACEBOOK_LOGGED_IN:
                 loginMethodValue = getString(R.string.login_method_facebook);
                 break;
@@ -92,24 +129,19 @@ public class SettingsFragment extends PreferenceFragment
         findPreference(getString(R.string.key_login_method))
                 .setSummary(loginMethodValue);
 
-        findPreference(getString(R.string.key_logout))
-                .setOnPreferenceClickListener(this);
-    }
+        findPreference(getString(R.string.key_user_email))
+                .setSummary(userEmailPref.get());
 
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        String key = preference.getKey();
-
-        if (key.equals(getString(R.string.key_logout))) {
-            settingsClickListener.onLogoutSettingClicked();
-            return true;
-        }
-
-        return false;
+        findPreference(getString(R.string.key_username))
+                .setSummary(usernamePref.get());
     }
 
 
     public interface SettingsClickListener {
+
+        void onUsernameSettingClicked();
+
+        void onPasswordSettingClicked();
 
         void onLogoutSettingClicked();
     }

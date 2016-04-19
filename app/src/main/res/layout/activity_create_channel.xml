@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.citrix.wrekt.activity.CreateChannelActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp"
+        app:navigationIcon="@drawable/ic_navigate_back_white"
+        app:title="@string/activity_create_channel_title"
+        app:titleTextAppearance="@style/Toolbar.SmallTextAppearance">
+
+        <android.support.v7.widget.ActionMenuView
+            android:id="@+id/action_menu_view"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="top|end"
+            android:background="@color/primary"
+            android:gravity="center"
+            android:padding="10dp" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/channel_category_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Secondary" />
+
+            <ViewSwitcher
+                android:id="@+id/channel_category_view_switcher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:animateLayoutChanges="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/channel_category_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/game_category_array" />
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/channel_category_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/enter_category_hint"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/primary_text"
+                    android:textColorHint="@color/primary_light"
+                    android:textSize="16sp" />
+
+            </ViewSwitcher>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/channel_name_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Secondary" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/channel_name_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/enter_name_hint"
+                android:imeActionLabel="@string/ime_action_next_text"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="2"
+                android:textColor="@color/primary_text"
+                android:textColorHint="@color/primary_light"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/channel_description_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Secondary" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/channel_description_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/enter_description_hint"
+                android:imeActionLabel="@string/ime_action_done_text"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="10"
+                android:textColor="@color/primary_text"
+                android:textColorHint="@color/primary_light"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

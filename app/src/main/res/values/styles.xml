@@ -8,6 +8,17 @@
         <item name="android:fontFamily">@string/roboto_medium</item>
     </style>
 
+    <style name="TextAppearance.AppCompat.Primary">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Secondary">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/divider_color</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+    </style>
+
     <style name="TextAppearance.AppCompat.Hint">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/primary_light</item>

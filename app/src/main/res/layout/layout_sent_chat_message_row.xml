@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="12dp"
+    android:layout_marginLeft="50dp"
+    android:layout_marginRight="12dp"
+    android:layout_marginStart="50dp">
+
+    <LinearLayout
+        android:id="@+id/message_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/round_corner_accent"
+        android:gravity="end"
+        android:orientation="vertical"
+        android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="10dp"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/sender_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginEnd="85dp"
+                android:layout_marginRight="85dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@color/chat_sender_name_text"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/message_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:gravity="end"
+                android:minWidth="80dp"
+                android:textColor="@color/control_highlight"
+                android:textSize="12sp" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/message_content_view_switcher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="all"
+                android:singleLine="false"
+                android:textColor="@color/primary"
+                android:textIsSelectable="true"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/click_to_listen_button"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/play_sent_record_button_background"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/click_to_listen_message"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

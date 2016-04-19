@@ -1,7 +1,10 @@
 package com.citrix.wrekt.di.component;
 
 import com.citrix.wrekt.activity.BaseActivity;
+import com.citrix.wrekt.activity.ChannelChatActivity;
 import com.citrix.wrekt.activity.ChannelInfoActivity;
+import com.citrix.wrekt.activity.ChannelMemberActivity;
+import com.citrix.wrekt.activity.CreateChannelActivity;
 import com.citrix.wrekt.activity.LoginActivity;
 import com.citrix.wrekt.activity.MainActivity;
 import com.citrix.wrekt.activity.SettingsActivity;
@@ -28,9 +31,15 @@ public interface ActivityComponent {
 
     void inject(MainActivity mainActivity);
 
+    void inject(CreateChannelActivity createChannelActivity);
+
     void inject(SettingsActivity settingsActivity);
 
     void inject(ChannelInfoActivity channelInfoActivity);
+
+    void inject(ChannelMemberActivity channelMemberActivity);
+
+    void inject(ChannelChatActivity channelChatActivity);
 
     void inject(BaseFragment baseFragment);
 

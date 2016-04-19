@@ -1,4 +1,4 @@
-package com.citrix.wrekt.fragment;
+package com.citrix.wrekt.fragment.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -67,6 +67,7 @@ public class LogoutDialogFragment extends DialogFragment {
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
     }
+
 
     public interface LogoutActionListener {
 

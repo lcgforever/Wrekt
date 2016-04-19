@@ -8,36 +8,14 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/list_background">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingLeft="40dp"
-                android:paddingRight="40dp">
-
-                <ImageView
-                    android:layout_width="240dp"
-                    android:layout_height="240dp"
-                    android:layout_marginTop="80dp"
-                    android:src="@drawable/ic_empty_chat_illustration" />
-
-                <TextView
-                    android:id="@+id/empty_message_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:textColor="@color/secondary_text"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
+            <include layout="@layout/layout_empty_channel" />
 
         </ScrollView>
 

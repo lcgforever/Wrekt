@@ -21,7 +21,32 @@ public class FirebaseUrlFormatter implements IFirebaseUrlFormatter {
     }
 
     @Override
-    public String getChanneslUrl() {
+    public String getChannelsUrl() {
         return String.format(context.getString(R.string.firebase_channels_url), baseUrl);
+    }
+
+    @Override
+    public String getUsersUrl() {
+        return String.format(context.getString(R.string.firebase_users_url), baseUrl);
+    }
+
+    @Override
+    public String getChatsUrl() {
+        return String.format(context.getString(R.string.firebase_chats_url), baseUrl);
+    }
+
+    @Override
+    public String getSubscriptionsUrl() {
+        return String.format(context.getString(R.string.firebase_subscriptions_url), baseUrl);
+    }
+
+    @Override
+    public String getChannelMembersUrl() {
+        return String.format(context.getString(R.string.firebase_chat_members_url), baseUrl);
+    }
+
+    @Override
+    public String getChannelAdminsUrl() {
+        return String.format(context.getString(R.string.firebase_chat_admins_url), baseUrl);
     }
 }

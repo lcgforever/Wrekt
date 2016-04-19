@@ -8,6 +8,7 @@ import com.citrix.wrekt.di.module.BusModule;
 import com.citrix.wrekt.di.module.DataModule;
 import com.citrix.wrekt.di.module.FirebaseModule;
 import com.citrix.wrekt.di.module.LoginModule;
+import com.citrix.wrekt.service.FriendRequestService;
 
 import javax.inject.Singleton;
 
@@ -30,4 +31,6 @@ public interface AppComponent {
     void inject(WrektApplication application);
 
     void inject(SplashActivity splashActivity);
+
+    void inject(FriendRequestService friendRequestService);
 }

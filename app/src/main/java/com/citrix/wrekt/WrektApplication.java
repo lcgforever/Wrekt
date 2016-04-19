@@ -20,6 +20,8 @@ public class WrektApplication extends Application {
 
         // Initialize Firebase SDK
         Firebase.setAndroidContext(this);
+        // Enable Firebase local data storage
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
 
         // Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this);

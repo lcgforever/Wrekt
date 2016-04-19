@@ -48,7 +48,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
         Picasso.with(context)
                 .load(channel.getImageUrl())
                 .placeholder(R.drawable.ic_loading)
-                .error(R.drawable.ic_loading)
+                .error(R.drawable.ic_no_image)
                 .into(holder.channelImageView);
     }
 
@@ -85,7 +85,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
             channelImageView = (ImageView) view.findViewById(R.id.channel_image_view);
             channelNameTextView = (TextView) view.findViewById(R.id.channel_name_text_view);
             channelDescriptionTextView = (TextView) view.findViewById(R.id.channel_description_text_view);
-            channelMemberCountTextView = (TextView) view.findViewById(R.id.channel_member_count_text);
+            channelMemberCountTextView = (TextView) view.findViewById(R.id.channel_member_count_text_view);
 
             view.setOnClickListener(this);
         }

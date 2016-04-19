@@ -3,6 +3,8 @@
     package="com.citrix.wrekt">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".WrektApplication"
@@ -55,6 +57,21 @@
             android:name=".activity.ChannelInfoActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.TranslucentStatusBar" />
+        <activity
+            android:name=".activity.ChannelChatActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.ChannelMemberActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".activity.CreateChannelActivity" />
+
+        <service
+            android:name=".service.FriendRequestService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>

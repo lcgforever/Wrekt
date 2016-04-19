@@ -85,7 +85,7 @@ public class SplashActivity extends AppCompatActivity {
     private void resetLoginStateAndShowLoginPage() {
         loginStatePref.set(LoginState.NOT_LOGGED_IN.getValue());
         loginExpireTimePref.set(0);
-        Toast.makeText(this, R.string.login_expired_message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.login_expired_message, Toast.LENGTH_SHORT).show();
         LoginActivity.start(this);
     }
 }

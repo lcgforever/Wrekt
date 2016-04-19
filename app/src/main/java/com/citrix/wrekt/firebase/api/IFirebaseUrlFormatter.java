@@ -4,5 +4,15 @@ public interface IFirebaseUrlFormatter {
 
     String getBaseUrl();
 
-    String getChanneslUrl();
+    String getChannelsUrl();
+
+    String getUsersUrl();
+
+    String getChatsUrl();
+
+    String getSubscriptionsUrl();
+
+    String getChannelMembersUrl();
+
+    String getChannelAdminsUrl();
 }

@@ -8,6 +8,8 @@
 
     <!-- Settings Keys -->
     <string name="key_login_method" translatable="false">key_login_method</string>
+    <string name="key_user_email" translatable="false">key_user_email</string>
+    <string name="key_username" translatable="false">key_username</string>
     <string name="key_logout" translatable="false">key_logout</string>
     <string name="login_method_facebook" translatable="false">Facebook</string>
     <string name="login_method_google_plus" translatable="false">Google Plus</string>
@@ -21,8 +23,14 @@
     <!-- Firebase -->
     <string name="firebase_base_url" translatable="false">https://wrekt.firebaseio.com</string>
     <string name="firebase_channels_url" translatable="false">%s/channels</string>
+    <string name="firebase_users_url" translatable="false">%s/users</string>
+    <string name="firebase_chats_url" translatable="false">%s/chats</string>
+    <string name="firebase_subscriptions_url" translatable="false">%s/subscriptions</string>
+    <string name="firebase_chat_members_url" translatable="false">%s/channelMembers</string>
+    <string name="firebase_chat_admins_url" translatable="false">%s/channelAdmins</string>
 
     <!-- General -->
     <string name="email_format_regex">^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$</string>
+    <string name="username_format_regex">^[a-zA-Z0-9._-]{3,}$</string>
 
 </resources>

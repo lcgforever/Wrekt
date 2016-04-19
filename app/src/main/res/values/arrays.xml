@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="game_category_array">
+        <item>Action</item>
+        <item>Action-Adventure</item>
+        <item>Adventure</item>
+        <item>RPG</item>
+        <item>Simulation</item>
+        <item>Strategy</item>
+        <item>Sports</item>
+        <item>FPS</item>
+        <item>TPS</item>
+        <item>MOBA</item>
+        <item>@string/customize_category_text</item>
+    </string-array>
+
+</resources>

@@ -4,11 +4,11 @@ import com.citrix.wrekt.data.LoginState;
 
 public interface ILoginController {
 
-    void signUpThenLogin(String username, String password);
+    void signUpThenLogin(String email, String password, String username);
 
-    void login(LoginState loginState, String username, String password);
+    void login(LoginState loginState, String email, String password, String username);
 
-    void loginWithOAuth(LoginState loginState, String authClient, String authToken);
+    void loginWithOAuth(LoginState loginState, String authClient, String authToken, String email);
 
     void logout();
 }

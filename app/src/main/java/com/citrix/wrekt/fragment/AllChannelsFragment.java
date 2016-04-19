@@ -62,13 +62,17 @@ public class AllChannelsFragment extends BaseFragment implements ChannelAdapter.
         super.onCreate(savedInstanceState);
 
         inject();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         setupFirebaseAndListener();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onPause() {
+        super.onPause();
         channelsRef.removeEventListener(channelsValueEventListener);
     }
 
@@ -101,11 +105,6 @@ public class AllChannelsFragment extends BaseFragment implements ChannelAdapter.
         TextView emptyMessageTextView = (TextView) view.findViewById(R.id.empty_message_text_view);
         emptyMessageTextView.setText(R.string.all_channel_list_empty_message);
 
-        // After rotation, we should manually retrieve data from Firebase again
-        if (savedInstanceState != null) {
-            channelsRef.addListenerForSingleValueEvent(new ChannelsValueEventListener());
-        }
-
         return view;
     }
 
@@ -122,7 +121,7 @@ public class AllChannelsFragment extends BaseFragment implements ChannelAdapter.
     }
 
     private void setupFirebaseAndListener() {
-        channelsRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getChanneslUrl());
+        channelsRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getChannelsUrl());
         channelsValueEventListener = new ChannelsValueEventListener();
         channelsRef.addValueEventListener(channelsValueEventListener);
     }
@@ -140,15 +139,19 @@ public class AllChannelsFragment extends BaseFragment implements ChannelAdapter.
         public void onDataChange(DataSnapshot dataSnapshot) {
             channelSwipeRefreshLayout.setRefreshing(false);
             List<Channel> allChannelList = new ArrayList<>();
-            if (dataSnapshot != null && dataSnapshot.exists()) {
-                ArrayList<Map<String, Object>> dataMap = (ArrayList<Map<String, Object>>) dataSnapshot.getValue();
-                for (Map<String, Object> channelMap : dataMap) {
+            if (dataSnapshot != null && dataSnapshot.exists() && dataSnapshot.getValue() != null) {
+                Map<String, Map<String, Object>> dataMap = (Map<String, Map<String, Object>>) dataSnapshot.getValue();
+                for (Map<String, Object> channelMap : dataMap.values()) {
                     if (channelMap != null) {
                         Channel channel = new Channel(channelMap.get("id").toString(),
                                 channelMap.get("name").toString(),
+                                Long.parseLong(channelMap.get("createTime").toString()),
+                                channelMap.get("category").toString(),
                                 channelMap.get("description").toString(),
                                 channelMap.get("imageUrl").toString(),
-                                Integer.parseInt(channelMap.get("memberCount").toString()));
+                                Integer.parseInt(channelMap.get("memberCount").toString()),
+                                channelMap.get("adminUid").toString(),
+                                channelMap.get("adminName").toString());
                         allChannelList.add(channel);
                     }
                 }

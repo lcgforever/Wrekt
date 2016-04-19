@@ -16,8 +16,8 @@ import com.citrix.wrekt.WrektApplication;
 import com.citrix.wrekt.activity.ChannelInfoActivity;
 import com.citrix.wrekt.adapter.ChannelAdapter;
 import com.citrix.wrekt.data.Channel;
-import com.citrix.wrekt.data.pref.StringSetPreference;
-import com.citrix.wrekt.di.annotation.MyChannelIdSetPref;
+import com.citrix.wrekt.data.pref.StringPreference;
+import com.citrix.wrekt.di.annotation.UidPref;
 import com.citrix.wrekt.di.component.ActivityComponent;
 import com.citrix.wrekt.di.module.ActivityModule;
 import com.citrix.wrekt.firebase.api.IFirebaseFactory;
@@ -37,8 +37,8 @@ import javax.inject.Inject;
 public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.ChannelClickListener {
 
     @Inject
-    @MyChannelIdSetPref
-    StringSetPreference myChannelIdSetPref;
+    @UidPref
+    StringPreference uidPref;
 
     @Inject
     IFirebaseFactory firebaseFactory;
@@ -51,9 +51,8 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
     private ChannelAdapter channelAdapter;
 
     private ActivityComponent activityComponent;
-    private Firebase channelsRef;
+    private Firebase subscriptionRef;
     private ChannelsValueEventListener channelsValueEventListener;
-    private Set<String> myChannelIdSet;
 
     public static MyChannelsFragment newInstance() {
         MyChannelsFragment fragment = new MyChannelsFragment();
@@ -70,16 +69,18 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
         super.onCreate(savedInstanceState);
 
         inject();
+    }
 
-        myChannelIdSet = myChannelIdSetPref.get();
-
+    @Override
+    public void onResume() {
+        super.onResume();
         setupFirebaseAndListener();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        channelsRef.removeEventListener(channelsValueEventListener);
+    public void onPause() {
+        super.onPause();
+        subscriptionRef.removeEventListener(channelsValueEventListener);
     }
 
     @Override
@@ -99,7 +100,7 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
         channelSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadAllChannels();
+                loadMyChannels();
             }
         });
 
@@ -110,11 +111,6 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
 
         TextView emptyMessageTextView = (TextView) view.findViewById(R.id.empty_message_text_view);
         emptyMessageTextView.setText(R.string.my_channel_list_empty_message);
-
-        // After rotation, we should manually retrieve data from Firebase again
-        if (savedInstanceState != null) {
-            channelsRef.addListenerForSingleValueEvent(new ChannelsValueEventListener());
-        }
 
         return view;
     }
@@ -132,14 +128,14 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
     }
 
     private void setupFirebaseAndListener() {
-        channelsRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getChanneslUrl());
+        subscriptionRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getSubscriptionsUrl()).child(uidPref.get());
         channelsValueEventListener = new ChannelsValueEventListener();
-        channelsRef.addValueEventListener(channelsValueEventListener);
+        subscriptionRef.addValueEventListener(channelsValueEventListener);
     }
 
-    private void loadAllChannels() {
+    private void loadMyChannels() {
         channelSwipeRefreshLayout.setRefreshing(true);
-        channelsRef.addListenerForSingleValueEvent(new ChannelsValueEventListener());
+        subscriptionRef.addListenerForSingleValueEvent(new ChannelsValueEventListener());
     }
 
 
@@ -148,33 +144,59 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
         @SuppressWarnings("unchecked")
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            channelSwipeRefreshLayout.setRefreshing(false);
-            List<Channel> myChannelList = new ArrayList<>();
-            if (dataSnapshot != null && dataSnapshot.exists()) {
-                ArrayList<Map<String, Object>> dataMap = (ArrayList<Map<String, Object>>) dataSnapshot.getValue();
-                for (Map<String, Object> channelMap : dataMap) {
-                    if (channelMap != null) {
-                        String channelId = channelMap.get("id").toString();
-                        if (myChannelIdSet.contains(channelId)) {
-                            Channel channel = new Channel(channelId,
-                                    channelMap.get("name").toString(),
-                                    channelMap.get("description").toString(),
-                                    channelMap.get("imageUrl").toString(),
-                                    Integer.parseInt(channelMap.get("memberCount").toString()));
-                            myChannelList.add(channel);
-                        }
-                    }
-                }
+            if (dataSnapshot != null && dataSnapshot.exists() && dataSnapshot.getValue() != null) {
+                Map<String, Map<String, Object>> dataMap = (Map<String, Map<String, Object>>) dataSnapshot.getValue();
+                Set<String> mySubscriptionIdSet = dataMap.keySet();
+                loadChannelData(mySubscriptionIdSet);
             } else {
+                channelSwipeRefreshLayout.setRefreshing(false);
+                channelRecyclerView.setVisibility(View.GONE);
                 Log.e("findme: ", "No channel data retrieved.");
             }
-            channelAdapter.updateChannelList(myChannelList);
-            channelRecyclerView.setVisibility(myChannelList.isEmpty() ? View.GONE : View.VISIBLE);
         }
 
         @Override
         public void onCancelled(FirebaseError firebaseError) {
 
+        }
+
+        private void loadChannelData(final Set<String> subscriptionIdSet) {
+            Firebase channelsRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getChannelsUrl());
+            channelsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @SuppressWarnings("unchecked")
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    channelSwipeRefreshLayout.setRefreshing(false);
+                    List<Channel> myChannelList = new ArrayList<>();
+                    if (dataSnapshot != null && dataSnapshot.exists() && dataSnapshot.getValue() != null) {
+                        Map<String, Map<String, Object>> dataMap = (Map<String, Map<String, Object>>) dataSnapshot.getValue();
+                        for (String channelId : dataMap.keySet()) {
+                            if (subscriptionIdSet.contains(channelId)) {
+                                Map<String, Object> channelMap = dataMap.get(channelId);
+                                Channel channel = new Channel(channelMap.get("id").toString(),
+                                        channelMap.get("name").toString(),
+                                        Long.parseLong(channelMap.get("createTime").toString()),
+                                        channelMap.get("category").toString(),
+                                        channelMap.get("description").toString(),
+                                        channelMap.get("imageUrl").toString(),
+                                        Integer.parseInt(channelMap.get("memberCount").toString()),
+                                        channelMap.get("adminUid").toString(),
+                                        channelMap.get("adminName").toString());
+                                myChannelList.add(channel);
+                            }
+                        }
+                    } else {
+                        Log.e("findme: ", "No channel data retrieved.");
+                    }
+                    channelAdapter.updateChannelList(myChannelList);
+                    channelRecyclerView.setVisibility(myChannelList.isEmpty() ? View.GONE : View.VISIBLE);
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
         }
     }
 }
