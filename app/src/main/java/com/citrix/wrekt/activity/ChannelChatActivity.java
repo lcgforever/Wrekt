@@ -685,8 +685,11 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             if (dataSnapshot != null && dataSnapshot.exists() && dataSnapshot.getValue() != null) {
                 Map<String, Object> messageMap = (Map<String, Object>) dataSnapshot.getValue();
-                String chatId = messageMap.get("id").toString();
-                if (!savedChatIdSet.contains(chatId)) {
+                String chatId = "";
+                if (messageMap.containsKey("id") && messageMap.get("id") != null) {
+                    chatId = messageMap.get("id").toString();
+                }
+                if (TextUtils.isEmpty(chatId) || !savedChatIdSet.contains(chatId)) {
                     boolean isRecording = Boolean.valueOf(messageMap.get("recording").toString());
                     String message = messageMap.get("message").toString();
                     ChatMessage chatMessage = new ChatMessage();
