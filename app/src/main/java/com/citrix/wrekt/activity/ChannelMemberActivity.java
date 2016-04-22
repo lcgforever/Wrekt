@@ -95,6 +95,8 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
             return;
         }
 
+        friendIdSet = new HashSet<>();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar supportActionBar = getSupportActionBar();
@@ -109,8 +111,6 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
         channelMemberRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         channelMemberAdapter = new ChannelMemberAdapter(this, new ArrayList<User>(), adminUid, uidPref.get(), friendIdSet, this);
         channelMemberRecyclerView.setAdapter(channelMemberAdapter);
-
-        friendIdSet = new HashSet<>();
     }
 
     @Override
@@ -186,12 +186,12 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
     }
 
     private void setupFirebaseAndListener(String channelId) {
-        channelMembersRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getBaseUrl()).child("channelMembers");
-        channelMemberChildEventListener = new ChannelMemberChildEventListener();
-        channelMembersRef.child(channelId).addChildEventListener(channelMemberChildEventListener);
         friendsRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getUserFriendsUrl()).child(uidPref.get());
         friendValueEventListener = new FriendValueEventListener();
         friendsRef.addValueEventListener(friendValueEventListener);
+        channelMembersRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getBaseUrl()).child("channelMembers");
+        channelMemberChildEventListener = new ChannelMemberChildEventListener();
+        channelMembersRef.child(channelId).addChildEventListener(channelMemberChildEventListener);
     }
 
 

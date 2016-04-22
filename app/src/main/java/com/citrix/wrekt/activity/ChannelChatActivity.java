@@ -91,7 +91,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
     private static final String TAG_LEAVE_CHANNEL_DIALOG = "TAG_LEAVE_CHANNEL_DIALOG";
     private static final String TAG_LEAVE_CHANNEL_PROGRESS_DIALOG = "TAG_LEAVE_CHANNEL_PROGRESS_DIALOG";
     private static final String RECORD_FILE_NAME = "chat_record";
-    private static final String RECORD_FILE_EXTENTION = ".mp4";
+    private static final String RECORD_FILE_EXTENSION = ".mp4";
     private static final boolean SHOW_JOIN_VIDEO_CHAT_DIALOG = true;
     private static final boolean SHOW_LEAVE_VIDEO_CHAT_DIALOG = false;
 
@@ -166,7 +166,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
 
         fragmentManager = getFragmentManager();
         try {
-            File tempRecordFile = File.createTempFile(RECORD_FILE_NAME, RECORD_FILE_EXTENTION, getCacheDir());
+            File tempRecordFile = File.createTempFile(RECORD_FILE_NAME, RECORD_FILE_EXTENSION, getCacheDir());
             tempRecordFilePath = tempRecordFile.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
@@ -379,6 +379,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onJoinVideoChatConfirmed() {
+        recordAudioButton.setEnabled(false);
         webcamMenuItem.setTitle(R.string.action_webcam_off);
         webcamMenuItem.setIcon(R.drawable.ic_webcam_off);
         videoWebView.loadUrl(channelConferenceUrl);
@@ -393,6 +394,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onLeaveVideoChatConfirmed() {
+        recordAudioButton.setEnabled(true);
         webcamMenuItem.setTitle(R.string.action_webcam);
         webcamMenuItem.setIcon(R.drawable.ic_webcam);
         videoWebView.loadUrl("javascript:window.leave()");
