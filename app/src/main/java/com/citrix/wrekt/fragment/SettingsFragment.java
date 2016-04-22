@@ -119,7 +119,7 @@ public class SettingsFragment extends PreferenceFragment
                 break;
 
             case WREKT_LOGGED_IN:
-                loginMethodValue = getString(R.string.login_method_wrekt);
+                loginMethodValue = getString(R.string.login_method_conspire);
                 break;
 
             default:

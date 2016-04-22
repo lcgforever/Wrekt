@@ -33,11 +33,6 @@ public class SplashActivity extends AppCompatActivity {
 
         WrektApplication application = (WrektApplication) getApplication();
         application.getAppComponent().inject(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         LoginState loginState = LoginState.from(loginStatePref.get());
         switch (loginState) {

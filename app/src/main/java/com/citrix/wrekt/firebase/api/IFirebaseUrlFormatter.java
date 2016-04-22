@@ -8,6 +8,8 @@ public interface IFirebaseUrlFormatter {
 
     String getUsersUrl();
 
+    String getPrivateChatsUrl();
+
     String getChatsUrl();
 
     String getSubscriptionsUrl();
@@ -15,4 +17,8 @@ public interface IFirebaseUrlFormatter {
     String getChannelMembersUrl();
 
     String getChannelAdminsUrl();
+
+    String getFriendRequestsUrl();
+
+    String getUserFriendsUrl();
 }

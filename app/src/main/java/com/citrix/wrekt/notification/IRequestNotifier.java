@@ -1,0 +1,27 @@
+package com.citrix.wrekt.notification;
+
+import android.app.Notification;
+
+public interface IRequestNotifier {
+
+    String EXTRA_PARAMS = "EXTRA_PARAMS";
+    String NOTIFICATION_ACTION_REQUEST_INTENT = "NOTIFICATION_ACTION_REQUEST_INTENT";
+    String NOTIFICATION_ACTION_ONGOING_VIDEO_CALL_INTENT = "NOTIFICATION_ACTION_ONGOING_VIDEO_CALL_INTENT";
+    String NOTIFICATION_ACTION_REJECT_REQUEST = "NOTIFICATION_ACTION_REJECT_REQUEST";
+    String NOTIFICATION_ACTION_POSTPONE_REQUEST = "NOTIFICATION_ACTION_POSTPONE_REQUEST";
+    String NOTIFICATION_ACTION_ACCEPT_REQUEST = "NOTIFICATION_ACTION_ACCEPT_REQUEST";
+
+    int NOTIFICATION_REQUEST_ID = 1000;
+    int NOTIFICATION_ONGOING_VIDEO_CALL_ID = 1001;
+    int REQ_CODE_REQUEST_INTENT = 2000;
+    int REQ_CODE_REQUEST_ACTION = 2001;
+    int REQ_CODE_ONGOING_VIDEO_CALL_INTENT = 2002;
+
+    void showRequestNotification(String[] params);
+
+    void cancelRequestNotification();
+
+    void showOngoingVideoCallNotifcation(String channelName);
+
+    void cancelOngoingVideoCallNotification();
+}

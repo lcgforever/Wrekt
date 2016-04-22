@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Wrekt</string>
+    <string name="app_name">Conspire</string>
 
     <!-- Action title -->
+    <string name="action_friends">Show Friends</string>
     <string name="action_logout">Logout</string>
     <string name="action_about_app">About App</string>
     <string name="action_settings">Settings</string>
@@ -11,6 +12,8 @@
     <string name="action_leave_channel">Leave Channel</string>
     <string name="action_done">Done</string>
     <string name="action_later">Later</string>
+    <string name="action_webcam">Join Video</string>
+    <string name="action_webcam_off">Leave Video</string>
 
     <!-- Activity title -->
     <string name="activity_main_title">Channels</string>
@@ -19,6 +22,7 @@
     <string name="activity_channel_info_title">Channel Info</string>
     <string name="activity_channel_member_title">Members</string>
     <string name="activity_create_channel_title">Create Channel</string>
+    <string name="activity_friend_title">Friends</string>
 
     <!-- About App Activity -->
     <string name="app_version">Version</string>
@@ -68,9 +72,11 @@
     <!-- Channel Member Activity -->
     <string name="member_name_me_suffix">(Me)</string>
     <string name="member_name_admin_suffix">(Admin)</string>
+    <string name="member_name_friend_suffix">(Friend)</string>
     <string name="send_email_text">Send Email</string>
     <string name="no_email_text">No email provided</string>
     <string name="add_friend_text">Add to friend list</string>
+    <string name="chat_with_friend_text">Chat with friend</string>
 
     <!-- Channel Chat Activity -->
     <string name="chat_message_hint_text">Enter your message here</string>
@@ -81,6 +87,16 @@
     <string name="click_to_listen_message">Click to play</string>
     <string name="playing_audio_message">Playing&#8230;</string>
     <string name="new_chat_notification_text">You received a new message.</string>
+
+    <!-- Friend Activity -->
+    <string name="tab_accepted_friends">Friends</string>
+    <string name="tab_pending_friend_requests">Pending</string>
+    <string name="accepted_friend_list_empty_message">You have no friend connections now.</string>
+    <string name="pending_friend_requests_empty_message">You have no pending friend requests.</string>
+    <string name="reject_request_text">Reject</string>
+    <string name="accept_request_text">Accept</string>
+    <string name="delete_request_text">Delete</string>
+    <string name="postpone_request_text">Postpone</string>
 
     <!-- Dialog Fragment -->
     <string name="login_progress_dialog_message">Logging in&#8230;</string>
@@ -94,8 +110,16 @@
     <string name="create_channel_dialog_message">Do you want to create this channel?</string>
     <string name="create_channel_progress_dialog_message">Creating Channel&#8230;</string>
     <string name="friend_request_dialog_message">User %s wants to connect with you as friend. Accept?</string>
+    <string name="join_video_chat_dialog_message">Do you want to join video chat for this channel? (Camera and mic access will be automatically granted)</string>
+    <string name="leave_video_chat_dialog_message">Do you want to leave video chat for this channel?</string>
 
-    <!-- Error Message -->
+    <!-- Notification -->
+    <string name="friend_request_notification_title">New Friend Request</string>
+    <string name="friend_request_notification_message">You received a friend request from %s.</string>
+    <string name="ongoing_video_call_notification_title">Ongoing Video Call</string>
+    <string name="ongoing_video_call_notification_message">You have an ongoing video call in channel %s.</string>
+
+    <!-- Toast Message -->
     <string name="login_expired_message">Your current session has expired. Please login again.</string>
     <string name="login_error_message">Login failed. Please try again.</string>
     <string name="login_firebase_error_message">Cannot login. %s</string>
@@ -114,5 +138,13 @@
     <string name="create_channel_failed_message">Failed to create the channel. Please try again.</string>
     <string name="friend_request_failed_message">Failed to send friend request. Please try again.</string>
     <string name="friend_request_postponed_message">You can go to friend list and check unresolved request.</string>
+    <string name="friend_request_accept_failed_message">Failed to add friend. Please try again.</string>
+    <string name="friend_request_reject_failed_message">Failed to reject the request. Please try again.</string>
+    <string name="friend_request_delete_failed_message">Failed to delete tge request. Please try again.</string>
+    <string name="friend_request_rejected_message">Your request to add %s has been rejected.</string>
+    <string name="friend_add_sucessful_message">You have added %s as your new friend.</string>
+    <string name="web_rtc_not_supported_message">Your Android system version does not support Real time communication. Please upgrade to 5.0 and above.</string>
+    <string name="video_chat_in_progress_message">Video chat starting, please wait for a few seconds.</string>
+    <string name="leave_video_chat_reminder_message">Video chat in progress. Please leave video chat first.</string>
 
 </resources>

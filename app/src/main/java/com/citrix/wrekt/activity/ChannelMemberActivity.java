@@ -13,9 +13,11 @@ import android.widget.Toast;
 import com.citrix.wrekt.R;
 import com.citrix.wrekt.WrektApplication;
 import com.citrix.wrekt.adapter.ChannelMemberAdapter;
-import com.citrix.wrekt.data.ChannelMember;
+import com.citrix.wrekt.data.User;
 import com.citrix.wrekt.data.pref.StringPreference;
 import com.citrix.wrekt.di.annotation.UidPref;
+import com.citrix.wrekt.di.annotation.UserEmailPref;
+import com.citrix.wrekt.di.annotation.UsernamePref;
 import com.citrix.wrekt.di.component.ActivityComponent;
 import com.citrix.wrekt.di.module.ActivityModule;
 import com.citrix.wrekt.firebase.api.IFirebaseFactory;
@@ -25,10 +27,13 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -42,6 +47,14 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
     StringPreference uidPref;
 
     @Inject
+    @UserEmailPref
+    StringPreference userEmailPref;
+
+    @Inject
+    @UsernamePref
+    StringPreference usernamePref;
+
+    @Inject
     IFirebaseFactory firebaseFactory;
 
     @Inject
@@ -53,8 +66,11 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
     private ChannelMemberAdapter channelMemberAdapter;
     private Firebase channelMembersRef;
     private ChannelMemberChildEventListener channelMemberChildEventListener;
+    private Firebase friendsRef;
+    private FriendValueEventListener friendValueEventListener;
     private String channelId;
     private String adminUid;
+    private Set<String> friendIdSet;
 
     public static void start(Context context, String channelId, String adminUid) {
         Intent intent = new Intent(context, ChannelMemberActivity.class);
@@ -91,8 +107,10 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
 
         channelMemberRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         channelMemberRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-        channelMemberAdapter = new ChannelMemberAdapter(this, new ArrayList<ChannelMember>(), adminUid, uidPref.get(), this);
+        channelMemberAdapter = new ChannelMemberAdapter(this, new ArrayList<User>(), adminUid, uidPref.get(), friendIdSet, this);
         channelMemberRecyclerView.setAdapter(channelMemberAdapter);
+
+        friendIdSet = new HashSet<>();
     }
 
     @Override
@@ -105,7 +123,12 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
     @Override
     protected void onPause() {
         super.onPause();
-        channelMembersRef.removeEventListener(channelMemberChildEventListener);
+        if (channelMembersRef != null && channelMemberChildEventListener != null) {
+            channelMembersRef.removeEventListener(channelMemberChildEventListener);
+        }
+        if (friendsRef != null && friendValueEventListener != null) {
+            friendsRef.removeEventListener(friendValueEventListener);
+        }
     }
 
     @Override
@@ -128,15 +151,20 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
     }
 
     @Override
-    public void onAddFriendClicked(String uid) {
-        Firebase friendRequestRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getBaseUrl()).child("friendRequests");
+    public void onAddFriendClicked(User channelMember) {
+        Firebase friendRequestRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getFriendRequestsUrl());
         Firebase newRequestRef = friendRequestRef.push();
         String requestId = newRequestRef.getKey();
         Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("requestId", requestId);
+        requestMap.put("id", requestId);
         requestMap.put("fromUid", uidPref.get());
-        requestMap.put("toUid", uid);
-        requestMap.put("finished", false);
+        requestMap.put("fromUserEmail", userEmailPref.get());
+        requestMap.put("fromUsername", usernamePref.get());
+        requestMap.put("toUid", channelMember.getUid());
+        requestMap.put("toUserEmail", channelMember.getUserEmail());
+        requestMap.put("toUsername", channelMember.getUsername());
+        requestMap.put("time", System.currentTimeMillis());
+        requestMap.put("status", "Pending");
         newRequestRef.setValue(requestMap, new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
@@ -151,10 +179,19 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
         });
     }
 
+    @Override
+    public void onChatWithFriendClicked(User friend) {
+        FriendChatActivity.start(this, friend.getUid(), friend.getUsername());
+        finish();
+    }
+
     private void setupFirebaseAndListener(String channelId) {
         channelMembersRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getBaseUrl()).child("channelMembers");
         channelMemberChildEventListener = new ChannelMemberChildEventListener();
         channelMembersRef.child(channelId).addChildEventListener(channelMemberChildEventListener);
+        friendsRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getUserFriendsUrl()).child(uidPref.get());
+        friendValueEventListener = new FriendValueEventListener();
+        friendsRef.addValueEventListener(friendValueEventListener);
     }
 
 
@@ -168,11 +205,13 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
                 String uid = memberMap.get("uid").toString();
                 int sortPriority = 0;
                 if (uidPref.get().equals(uid)) {
-                    sortPriority = 2;
+                    sortPriority = 3;
                 } else if (adminUid.equals(uid)) {
+                    sortPriority = 2;
+                } else if (friendIdSet.contains(uid)) {
                     sortPriority = 1;
                 }
-                ChannelMember channelMember = new ChannelMember(uid, memberMap.get("email").toString(),
+                User channelMember = new User(uid, memberMap.get("email").toString(),
                         memberMap.get("username").toString(), sortPriority);
                 channelMemberAdapter.addNewChannelMember(channelMember);
             }
@@ -191,6 +230,24 @@ public class ChannelMemberActivity extends BaseActivity implements ChannelMember
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    }
+
+    private class FriendValueEventListener implements ValueEventListener {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            if (dataSnapshot != null && dataSnapshot.exists() && dataSnapshot.getValue() != null) {
+                Map<String, Object> friendsMap = (Map<String, Object>) dataSnapshot.getValue();
+                friendIdSet = friendsMap.keySet();
+                channelMemberAdapter.updateFriendIdSet(friendIdSet);
+            }
         }
 
         @Override

@@ -31,6 +31,11 @@ public class FirebaseUrlFormatter implements IFirebaseUrlFormatter {
     }
 
     @Override
+    public String getPrivateChatsUrl() {
+        return String.format(context.getString(R.string.firebase_private_chats_url), baseUrl);
+    }
+
+    @Override
     public String getChatsUrl() {
         return String.format(context.getString(R.string.firebase_chats_url), baseUrl);
     }
@@ -42,11 +47,21 @@ public class FirebaseUrlFormatter implements IFirebaseUrlFormatter {
 
     @Override
     public String getChannelMembersUrl() {
-        return String.format(context.getString(R.string.firebase_chat_members_url), baseUrl);
+        return String.format(context.getString(R.string.firebase_channel_members_url), baseUrl);
     }
 
     @Override
     public String getChannelAdminsUrl() {
-        return String.format(context.getString(R.string.firebase_chat_admins_url), baseUrl);
+        return String.format(context.getString(R.string.firebase_channel_admins_url), baseUrl);
+    }
+
+    @Override
+    public String getFriendRequestsUrl() {
+        return String.format(context.getString(R.string.firebase_friend_requests_url), baseUrl);
+    }
+
+    @Override
+    public String getUserFriendsUrl() {
+        return String.format(context.getString(R.string.firebase_user_friends_url), baseUrl);
     }
 }

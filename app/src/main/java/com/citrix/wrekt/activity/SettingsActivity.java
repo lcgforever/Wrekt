@@ -24,6 +24,7 @@ import com.citrix.wrekt.firebase.api.IFirebaseUrlFormatter;
 import com.citrix.wrekt.fragment.SettingsFragment;
 import com.citrix.wrekt.fragment.dialog.ChangeUsernameDialogFragment;
 import com.citrix.wrekt.fragment.dialog.LogoutDialogFragment;
+import com.citrix.wrekt.service.FriendRequestService;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.squareup.otto.Subscribe;
@@ -164,6 +165,7 @@ public class SettingsActivity extends BaseActivity implements SettingsFragment.S
 
     @Subscribe
     public void onLogoutSuccessfulEventReceived(LogoutSuccessfulEvent event) {
+        FriendRequestService.stop(this);
         LoginActivity.start(this);
         finish();
     }

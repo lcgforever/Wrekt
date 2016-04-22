@@ -12,35 +12,40 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.citrix.wrekt.R;
-import com.citrix.wrekt.data.ChannelMember;
+import com.citrix.wrekt.data.User;
 import com.citrix.wrekt.util.EmailUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdapter.ChannelMemberViewHolder> {
 
     private Context context;
     private LayoutInflater layoutInflater;
-    private List<ChannelMember> channelMemberList;
+    private List<User> channelMemberList;
     private ChannelMemberActionListener channelMemberActionListener;
     private String adminUid;
     private String myUid;
+    private Set<String> friendIdSet;
     private String memberNameMeSuffix;
     private String memberNameAdminSuffix;
+    private String memberNameFriendSuffix;
     private int selectedPosition = -1;
 
-    public ChannelMemberAdapter(Context context, List<ChannelMember> channelMemberList, String adminUid,
-                                String myUid, ChannelMemberActionListener channelMemberActionListener) {
+    public ChannelMemberAdapter(Context context, List<User> channelMemberList, String adminUid, String myUid,
+                                Set<String> friendIdSet, ChannelMemberActionListener channelMemberActionListener) {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
         Collections.sort(channelMemberList);
         this.channelMemberList = channelMemberList;
         this.adminUid = adminUid;
         this.myUid = myUid;
+        this.friendIdSet = friendIdSet;
         this.channelMemberActionListener = channelMemberActionListener;
         memberNameMeSuffix = context.getString(R.string.member_name_me_suffix);
         memberNameAdminSuffix = context.getString(R.string.member_name_admin_suffix);
+        memberNameFriendSuffix = context.getString(R.string.member_name_friend_suffix);
     }
 
     @Override
@@ -51,21 +56,32 @@ public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdap
 
     @Override
     public void onBindViewHolder(ChannelMemberViewHolder holder, int position) {
-        ChannelMember channelMember = channelMemberList.get(position);
+        User channelMember = channelMemberList.get(position);
         String uid = channelMember.getUid();
         String username = channelMember.getUsername();
         String email = channelMember.getUserEmail();
         holder.memberUsernameTextView.setText(getMemberRoleString(uid, username));
-        if (!TextUtils.isEmpty(email)) {
-            holder.memberEmailTextView.setText(channelMember.getUserEmail());
-        }
-        if (TextUtils.isEmpty(email) || myUid.equals(uid)) {
+        if (myUid.equals(uid)) {
+            holder.memberEmailTextView.setText("");
             holder.memberEmailImageButton.setVisibility(View.GONE);
+            holder.memberOptionContainer.setVisibility(View.GONE);
+            holder.friendOptionContainer.setVisibility(View.GONE);
         } else {
-            holder.memberEmailImageButton.setVisibility(View.VISIBLE);
+            if (TextUtils.isEmpty(email)) {
+                holder.memberEmailTextView.setText(R.string.no_email_text);
+                holder.memberEmailImageButton.setVisibility(View.GONE);
+            } else {
+                holder.memberEmailTextView.setText(channelMember.getUserEmail());
+                holder.memberEmailImageButton.setVisibility(View.VISIBLE);
+            }
+            if (friendIdSet.contains(uid)) {
+                holder.memberOptionContainer.setVisibility(View.GONE);
+                holder.friendOptionContainer.setVisibility(selectedPosition == position ? View.VISIBLE : View.GONE);
+            } else {
+                holder.friendOptionContainer.setVisibility(View.GONE);
+                holder.memberOptionContainer.setVisibility(selectedPosition == position ? View.VISIBLE : View.GONE);
+            }
         }
-
-        holder.memberOptionContainer.setVisibility(selectedPosition == position ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -73,8 +89,8 @@ public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdap
         return channelMemberList == null ? 0 : channelMemberList.size();
     }
 
-    public void addNewChannelMember(ChannelMember channelMember) {
-        channelMemberList.add(channelMember);
+    public void addNewChannelMember(User user) {
+        channelMemberList.add(user);
         Collections.sort(channelMemberList);
         notifyDataSetChanged();
     }
@@ -84,6 +100,10 @@ public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdap
         notifyDataSetChanged();
     }
 
+    public void updateFriendIdSet(Set<String> friendIdSet) {
+        this.friendIdSet = friendIdSet;
+    }
+
     private String getMemberRoleString(String uid, String username) {
         if (myUid.equals(uid)) {
             username = username + " " + memberNameMeSuffix;
@@ -91,13 +111,18 @@ public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdap
         if (adminUid.equals(uid)) {
             username = username + " " + memberNameAdminSuffix;
         }
+        if (friendIdSet.contains(uid)) {
+            username = username + " " + memberNameFriendSuffix;
+        }
         return username;
     }
 
 
     public interface ChannelMemberActionListener {
 
-        void onAddFriendClicked(String uid);
+        void onAddFriendClicked(User channelMember);
+
+        void onChatWithFriendClicked(User friend);
     }
 
     protected class ChannelMemberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -108,6 +133,8 @@ public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdap
         private ImageButton memberEmailImageButton;
         private LinearLayout memberOptionContainer;
         private TextView addFriendTextView;
+        private LinearLayout friendOptionContainer;
+        private TextView chatWithFriendTextView;
 
         public ChannelMemberViewHolder(View itemView) {
             super(itemView);
@@ -117,15 +144,19 @@ public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdap
             memberEmailImageButton = (ImageButton) itemView.findViewById(R.id.member_email_image_button);
             memberOptionContainer = (LinearLayout) itemView.findViewById(R.id.member_option_container);
             addFriendTextView = (TextView) itemView.findViewById(R.id.add_friend_text_view);
+            friendOptionContainer = (LinearLayout) itemView.findViewById(R.id.friend_option_container);
+            chatWithFriendTextView = (TextView) itemView.findViewById(R.id.chat_with_friend_text_view);
 
             memberInfoContainer.setOnClickListener(this);
             memberEmailImageButton.setOnClickListener(this);
             addFriendTextView.setOnClickListener(this);
+            chatWithFriendTextView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
+            User channelMember = channelMemberList.get(position);
             switch (v.getId()) {
                 case R.id.member_info_container:
                     if (selectedPosition == position) {
@@ -137,13 +168,16 @@ public class ChannelMemberAdapter extends RecyclerView.Adapter<ChannelMemberAdap
                     break;
 
                 case R.id.member_email_image_button:
-                    ChannelMember channelMember = channelMemberList.get(position);
                     String[] recipientEmails = {channelMember.getUserEmail()};
                     EmailUtils.sendEmailToRecipients(context, recipientEmails);
                     break;
 
                 case R.id.add_friend_text_view:
-                    channelMemberActionListener.onAddFriendClicked(channelMemberList.get(position).getUid());
+                    channelMemberActionListener.onAddFriendClicked(channelMember);
+                    break;
+
+                case R.id.chat_with_friend_text_view:
+                    channelMemberActionListener.onChatWithFriendClicked(channelMember);
                     break;
             }
         }

@@ -13,7 +13,6 @@ import com.citrix.wrekt.data.Channel;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder> {
@@ -22,13 +21,11 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
     private LayoutInflater layoutInflater;
     private List<Channel> channelList;
     private ChannelClickListener channelClickListener;
-    private NameComparator nameComparator;
 
     public ChannelAdapter(Context context, List<Channel> channelList, ChannelClickListener channelClickListener) {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
-        nameComparator = new NameComparator();
-        Collections.sort(channelList, nameComparator);
+        Collections.sort(channelList);
         this.channelList = channelList;
         this.channelClickListener = channelClickListener;
     }
@@ -60,7 +57,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
     public void updateChannelList(List<Channel> channelList) {
         if (channelList != null) {
             this.channelList.clear();
-            Collections.sort(channelList, nameComparator);
+            Collections.sort(channelList);
             this.channelList.addAll(channelList);
             notifyDataSetChanged();
         }
@@ -95,14 +92,6 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
             int position = getAdapterPosition();
             Channel channel = channelList.get(position);
             channelClickListener.onChannelClicked(channel.getId());
-        }
-    }
-
-    private class NameComparator implements Comparator<Channel> {
-
-        @Override
-        public int compare(Channel first, Channel second) {
-            return first.getName().compareTo(second.getName());
         }
     }
 }

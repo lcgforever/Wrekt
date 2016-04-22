@@ -8,10 +8,10 @@
     android:paddingRight="40dp">
 
     <ImageView
+        android:id="@+id/empty_image_view"
         android:layout_width="240dp"
         android:layout_height="240dp"
-        android:layout_marginTop="64dp"
-        android:src="@drawable/ic_empty_chat_illustration" />
+        android:layout_marginTop="64dp" />
 
     <TextView
         android:id="@+id/empty_message_text_view"

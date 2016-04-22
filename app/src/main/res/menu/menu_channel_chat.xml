@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_webcam"
+        android:icon="@drawable/ic_webcam"
+        android:title="@string/action_webcam"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_leave_channel"
         android:title="@string/action_leave_channel"
         app:showAsAction="never" />

@@ -89,4 +89,32 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/friend_option_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/primary_light" />
+
+        <TextView
+            android:id="@+id/chat_with_friend_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawableLeft="@drawable/ic_admin"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/ic_admin"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="@string/chat_with_friend_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Primary" />
+
+    </LinearLayout>
+
 </LinearLayout>

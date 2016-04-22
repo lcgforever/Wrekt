@@ -1,10 +1,12 @@
 package com.citrix.wrekt.data;
 
-public class Channel {
+import android.support.annotation.NonNull;
+
+public class Channel implements Comparable<Channel> {
 
     private String id;
     private String name;
-    private long createTime;
+    private Long createTime;
     private String category;
     private String description;
     private String imageUrl;
@@ -15,7 +17,7 @@ public class Channel {
     public Channel() {
     }
 
-    public Channel(String id, String name, long createTime, String category, String description, String imageUrl, int memberCount, String adminUid, String adminName) {
+    public Channel(String id, String name, Long createTime, String category, String description, String imageUrl, int memberCount, String adminUid, String adminName) {
         this.id = id;
         this.name = name;
         this.createTime = createTime;
@@ -35,11 +37,11 @@ public class Channel {
         this.id = id;
     }
 
-    public long getCreateTime() {
+    public Long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(long createTime) {
+    public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
 
@@ -97,5 +99,14 @@ public class Channel {
 
     public void setAdminName(String adminName) {
         this.adminName = adminName;
+    }
+
+    @Override
+    public int compareTo(@NonNull Channel another) {
+        if (createTime.longValue() == another.createTime.longValue()) {
+            return name.compareTo(another.name);
+        } else {
+            return -1 * createTime.compareTo(another.createTime);
+        }
     }
 }

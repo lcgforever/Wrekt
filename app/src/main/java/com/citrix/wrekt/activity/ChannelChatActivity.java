@@ -4,6 +4,8 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
+import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
@@ -22,6 +24,14 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.PermissionRequest;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -43,6 +53,8 @@ import com.citrix.wrekt.firebase.api.IFirebaseFactory;
 import com.citrix.wrekt.firebase.api.IFirebaseUrlFormatter;
 import com.citrix.wrekt.fragment.dialog.LeaveChannelDialogFragment;
 import com.citrix.wrekt.fragment.dialog.ProgressDialogFragment;
+import com.citrix.wrekt.fragment.dialog.VideoChatDialogFragment;
+import com.citrix.wrekt.notification.IRequestNotifier;
 import com.citrix.wrekt.util.KeyboardUtils;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -66,15 +78,22 @@ import java.util.Set;
 import javax.inject.Inject;
 
 public class ChannelChatActivity extends BaseActivity implements View.OnClickListener, View.OnTouchListener,
-        ActionMenuView.OnMenuItemClickListener, LeaveChannelDialogFragment.LeaveChannelActionListener {
+        ActionMenuView.OnMenuItemClickListener, LeaveChannelDialogFragment.LeaveChannelActionListener,
+        VideoChatDialogFragment.VideoChatActionListener {
 
-    private static final String EXTRA_CHANNEL_ID = "EXTRA_CHANNEL_ID";
-    private static final String EXTRA_CHANNEL_NAME = "EXTRA_CHANNEL_NAME";
+    public static final String EXTRA_CHANNEL_ID = "EXTRA_CHANNEL_ID";
+    public static final String EXTRA_CHANNEL_NAME = "EXTRA_CHANNEL_NAME";
+    public static final String EXTRA_CHANNEL_CONF_URL = "EXTRA_CHANNEL_CONF_URL";
+
+    private static final String EXTRA_IN_VIDEO_CHAT = "EXTRA_IN_VIDEO_CHAT";
+    private static final String TAG_JOIN_OR_LEAVE_VIDEO_CHAT_DIALOG = "TAG_JOIN_OR_LEAVE_VIDEO_CHAT_DIALOG";
     private static final String TAG_RECORD_PROGRESS_DIALOG = "TAG_RECORD_PROGRESS_DIALOG";
     private static final String TAG_LEAVE_CHANNEL_DIALOG = "TAG_LEAVE_CHANNEL_DIALOG";
     private static final String TAG_LEAVE_CHANNEL_PROGRESS_DIALOG = "TAG_LEAVE_CHANNEL_PROGRESS_DIALOG";
     private static final String RECORD_FILE_NAME = "chat_record";
     private static final String RECORD_FILE_EXTENTION = ".mp4";
+    private static final boolean SHOW_JOIN_VIDEO_CHAT_DIALOG = true;
+    private static final boolean SHOW_LEAVE_VIDEO_CHAT_DIALOG = false;
 
     @Inject
     @UidPref
@@ -90,7 +109,11 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
     @Inject
     IFirebaseUrlFormatter firebaseUrlFormatter;
 
+    @Inject
+    IRequestNotifier requestNotifier;
+
     private ActionMenuView actionMenuView;
+    private WebView videoWebView;
     private RecyclerView chatRecyclerView;
     private LinearLayout chatEmptyContainer;
     private ViewSwitcher chatMethodViewSwitcher;
@@ -101,6 +124,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
     private RelativeLayout newMessageSnackbarContainer;
 
     private ActivityComponent activityComponent;
+    private MenuItem webcamMenuItem;
     private LinearLayoutManager linearLayoutManager;
     private FragmentManager fragmentManager;
     private ChatMessageAdapter chatMessageAdapter;
@@ -110,12 +134,15 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
     private MediaRecorder recorder;
     private String channelId;
     private String channelName;
+    private String channelConferenceUrl;
     private String tempRecordFilePath;
+    private boolean isInVideoChat;
 
-    public static void start(Context context, String channelId, String channelName) {
+    public static void start(Context context, String channelId, String channelName, String channelConfUrl) {
         Intent intent = new Intent(context, ChannelChatActivity.class);
         intent.putExtra(EXTRA_CHANNEL_ID, channelId);
         intent.putExtra(EXTRA_CHANNEL_NAME, channelName);
+        intent.putExtra(EXTRA_CHANNEL_CONF_URL, channelConfUrl);
         context.startActivity(intent);
     }
 
@@ -130,6 +157,8 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
         if (launchIntent != null) {
             channelId = launchIntent.getStringExtra(EXTRA_CHANNEL_ID);
             channelName = launchIntent.getStringExtra(EXTRA_CHANNEL_NAME);
+            String confUrlPostfix = launchIntent.getStringExtra(EXTRA_CHANNEL_CONF_URL);
+            channelConferenceUrl = String.format(getString(R.string.channel_conference_url_format), confUrlPostfix);
         } else {
             finish();
             return;
@@ -153,6 +182,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
         }
 
         actionMenuView = (ActionMenuView) findViewById(R.id.action_menu_view);
+        videoWebView = (WebView) findViewById(R.id.video_web_view);
         chatRecyclerView = (RecyclerView) findViewById(R.id.channel_chat_recycler_view);
         chatEmptyContainer = (LinearLayout) findViewById(R.id.chat_empty_container);
         chatMethodViewSwitcher = (ViewSwitcher) findViewById(R.id.chat_method_view_switcher);
@@ -168,6 +198,14 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
         chatRecyclerView.setLayoutManager(linearLayoutManager);
         chatMessageAdapter = new ChatMessageAdapter(this, new ArrayList<ChatMessage>(), uidPref.get());
         chatRecyclerView.setAdapter(chatMessageAdapter);
+
+        videoWebView.setWebViewClient(new VideoWebViewClient());
+        videoWebView.setWebChromeClient(new VideoWebChromeClient());
+        // Enable JavaScript and video auto play in web view
+        videoWebView.getSettings().setJavaScriptEnabled(true);
+        videoWebView.getSettings().setSupportZoom(true);
+        videoWebView.getSettings().setBuiltInZoomControls(true);
+        videoWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
 
         chatMessageEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -203,15 +241,27 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        hideJoinOrLeaveVideoChatDialog();
         hideRecordProgressDialog();
         hideLeaveChannelDialog();
         hideLeaveProgressDialog();
+        outState.putBoolean(EXTRA_IN_VIDEO_CHAT, isInVideoChat);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        isInVideoChat = savedInstanceState.getBoolean(EXTRA_IN_VIDEO_CHAT, false);
+        if (isInVideoChat) {
+            videoWebView.loadUrl(channelConferenceUrl);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        videoWebView.destroy();
         activityComponent = null;
     }
 
@@ -227,12 +277,28 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
         Menu actionMenu = actionMenuView.getMenu();
         actionMenu.clear();
         getMenuInflater().inflate(R.menu.menu_channel_chat, actionMenu);
+        webcamMenuItem = actionMenu.findItem(R.id.action_webcam);
         return true;
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_webcam:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (isInVideoChat) {
+                        showJoinOrLeaveVideoChatDialog(SHOW_LEAVE_VIDEO_CHAT_DIALOG);
+                    } else {
+                        showJoinOrLeaveVideoChatDialog(SHOW_JOIN_VIDEO_CHAT_DIALOG);
+                    }
+                } else {
+                    Toast.makeText(this,
+                            R.string.web_rtc_not_supported_message,
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+                return true;
+
             case R.id.action_leave_channel:
                 showLeaveChannelDialog();
                 return true;
@@ -242,8 +308,28 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
-        return true;
+        if (isInVideoChat) {
+            Toast.makeText(this,
+                    R.string.leave_video_chat_reminder_message,
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return false;
+        } else {
+            finish();
+            return true;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isInVideoChat) {
+            Toast.makeText(this,
+                    R.string.leave_video_chat_reminder_message,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -289,6 +375,30 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public void onJoinVideoChatConfirmed() {
+        webcamMenuItem.setTitle(R.string.action_webcam_off);
+        webcamMenuItem.setIcon(R.drawable.ic_webcam_off);
+        videoWebView.loadUrl(channelConferenceUrl);
+        videoWebView.setVisibility(View.VISIBLE);
+        requestNotifier.showOngoingVideoCallNotifcation(channelName);
+        isInVideoChat = true;
+        Toast.makeText(this,
+                R.string.video_chat_in_progress_message,
+                Toast.LENGTH_LONG)
+                .show();
+    }
+
+    @Override
+    public void onLeaveVideoChatConfirmed() {
+        webcamMenuItem.setTitle(R.string.action_webcam);
+        webcamMenuItem.setIcon(R.drawable.ic_webcam);
+        videoWebView.loadUrl("javascript:window.leave()");
+        videoWebView.setVisibility(View.GONE);
+        requestNotifier.cancelOngoingVideoCallNotification();
+        isInVideoChat = false;
     }
 
     @Override
@@ -341,6 +451,23 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
         });
     }
 
+    private void showJoinOrLeaveVideoChatDialog(boolean joinVideoChat) {
+        VideoChatDialogFragment fragment
+                = (VideoChatDialogFragment) fragmentManager.findFragmentByTag(TAG_JOIN_OR_LEAVE_VIDEO_CHAT_DIALOG);
+        if (fragment == null) {
+            fragment = VideoChatDialogFragment.newInstance(joinVideoChat);
+        }
+        fragment.show(fragmentManager, TAG_JOIN_OR_LEAVE_VIDEO_CHAT_DIALOG);
+    }
+
+    private void hideJoinOrLeaveVideoChatDialog() {
+        VideoChatDialogFragment fragment
+                = (VideoChatDialogFragment) fragmentManager.findFragmentByTag(TAG_JOIN_OR_LEAVE_VIDEO_CHAT_DIALOG);
+        if (fragment != null) {
+            fragment.dismiss();
+        }
+    }
+
     private void updateChannelMemberCount() {
         Firebase channelRef = firebaseFactory.createFirebase(firebaseUrlFormatter.getChannelsUrl()).child(channelId);
         channelRef.child("memberCount").runTransaction(new Transaction.Handler() {
@@ -389,7 +516,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                 if (firebaseError == null) {
-                    hideLeaveChannelDialog();
+                    hideLeaveProgressDialog();
                     finish();
                 } else {
                     showLeaveChannelFailedMessage(firebaseError.getMessage());
@@ -400,7 +527,7 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
 
     private void showLeaveChannelFailedMessage(String failureMessage) {
         Log.e("findme: ", "Firebase add subscription failed: " + failureMessage);
-        hideLeaveChannelDialog();
+        hideLeaveProgressDialog();
         Toast.makeText(this,
                 R.string.join_channel_failed_message,
                 Toast.LENGTH_SHORT)
@@ -619,6 +746,43 @@ public class ChannelChatActivity extends BaseActivity implements View.OnClickLis
         @Override
         public void afterTextChanged(Editable s) {
             sendChatImageButton.setEnabled(!TextUtils.isEmpty(s));
+        }
+    }
+
+    private class VideoWebViewClient extends WebViewClient {
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.e("findme: ", "Receive error: " + error.getErrorCode() + "   " + error.getDescription());
+            }
+            super.onReceivedError(view, request, error);
+        }
+
+        @Override
+        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.e("findme: ", "Receive error: " + errorResponse.getStatusCode() + "   " + errorResponse.getReasonPhrase());
+            }
+            super.onReceivedHttpError(view, request, errorResponse);
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            Log.e("findme: ", "Receive SSL error: " + error);
+            handler.proceed();
+        }
+    }
+
+    private class VideoWebChromeClient extends WebChromeClient {
+
+        @Override
+        public void onPermissionRequest(PermissionRequest request) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                request.grant(request.getResources());
+            } else {
+                super.onPermissionRequest(request);
+            }
         }
     }
 }

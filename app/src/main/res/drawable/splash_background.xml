@@ -3,4 +3,11 @@
 
     <item android:drawable="@color/accent" />
 
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_conspire_logo"
+            android:tint="@color/white" />
+    </item>
+
 </layer-list>

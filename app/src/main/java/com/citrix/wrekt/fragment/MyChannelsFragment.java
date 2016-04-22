@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.citrix.wrekt.R;
@@ -80,7 +81,9 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
     @Override
     public void onPause() {
         super.onPause();
-        subscriptionRef.removeEventListener(channelsValueEventListener);
+        if (subscriptionRef != null && channelsValueEventListener != null) {
+            subscriptionRef.removeEventListener(channelsValueEventListener);
+        }
     }
 
     @Override
@@ -109,6 +112,8 @@ public class MyChannelsFragment extends BaseFragment implements ChannelAdapter.C
         channelAdapter = new ChannelAdapter(getActivity(), new ArrayList<Channel>(), this);
         channelRecyclerView.setAdapter(channelAdapter);
 
+        ImageView emptyImageView = (ImageView) view.findViewById(R.id.empty_image_view);
+        emptyImageView.setImageResource(R.drawable.ic_empty_chat_illustration);
         TextView emptyMessageTextView = (TextView) view.findViewById(R.id.empty_message_text_view);
         emptyMessageTextView.setText(R.string.my_channel_list_empty_message);
 

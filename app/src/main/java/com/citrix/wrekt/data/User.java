@@ -2,17 +2,17 @@ package com.citrix.wrekt.data;
 
 import android.support.annotation.NonNull;
 
-public class ChannelMember implements Comparable<ChannelMember> {
+public class User implements Comparable<User> {
 
     private String uid;
     private String userEmail;
     private String username;
     private int sortPriority;
 
-    public ChannelMember() {
+    public User() {
     }
 
-    public ChannelMember(String uid, String userEmail, String username, int sortPriority) {
+    public User(String uid, String userEmail, String username, int sortPriority) {
         this.uid = uid;
         this.userEmail = userEmail;
         this.username = username;
@@ -44,7 +44,7 @@ public class ChannelMember implements Comparable<ChannelMember> {
     }
 
     @Override
-    public int compareTo(@NonNull ChannelMember another) {
+    public int compareTo(@NonNull User another) {
         if (sortPriority == another.sortPriority) {
             return username.compareTo(another.getUsername());
         } else {

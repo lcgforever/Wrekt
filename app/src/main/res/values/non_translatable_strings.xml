@@ -14,7 +14,7 @@
     <string name="login_method_facebook" translatable="false">Facebook</string>
     <string name="login_method_google_plus" translatable="false">Google Plus</string>
     <string name="login_method_g2m" translatable="false">GoToMeeting</string>
-    <string name="login_method_wrekt" translatable="false">Wrekt</string>
+    <string name="login_method_conspire" translatable="false">Conspire</string>
 
     <!-- Auth Clients -->
     <string name="facebook_app_id" translatable="false">1672376459678662</string>
@@ -26,11 +26,15 @@
     <string name="firebase_users_url" translatable="false">%s/users</string>
     <string name="firebase_chats_url" translatable="false">%s/chats</string>
     <string name="firebase_subscriptions_url" translatable="false">%s/subscriptions</string>
-    <string name="firebase_chat_members_url" translatable="false">%s/channelMembers</string>
-    <string name="firebase_chat_admins_url" translatable="false">%s/channelAdmins</string>
+    <string name="firebase_channel_members_url" translatable="false">%s/channelMembers</string>
+    <string name="firebase_channel_admins_url" translatable="false">%s/channelAdmins</string>
+    <string name="firebase_friend_requests_url" translatable="false">%s/friendRequests</string>
+    <string name="firebase_user_friends_url" translatable="false">%s/userFriends</string>
+    <string name="firebase_private_chats_url" translatable="false">%s/privateChats</string>
 
     <!-- General -->
     <string name="email_format_regex">^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$</string>
     <string name="username_format_regex">^[a-zA-Z0-9._-]{3,}$</string>
+    <string name="channel_conference_url_format">https://conspire.rtcdev.citrixonline.com/webview/#%s</string>
 
 </resources>

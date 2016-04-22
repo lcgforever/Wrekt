@@ -27,6 +27,7 @@ import com.citrix.wrekt.event.LogoutSuccessfulEvent;
 import com.citrix.wrekt.fragment.AllChannelsFragment;
 import com.citrix.wrekt.fragment.MyChannelsFragment;
 import com.citrix.wrekt.fragment.dialog.LogoutDialogFragment;
+import com.citrix.wrekt.service.FriendRequestService;
 import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
@@ -81,6 +82,9 @@ public class MainActivity extends BaseActivity implements ActionMenuView.OnMenuI
         createChannelFAB.setOnClickListener(this);
 
         setupViewPager(savedInstanceState);
+
+        // TODO: figure out where is best to start and stop this service
+        FriendRequestService.start(this);
     }
 
     @Override
@@ -113,6 +117,10 @@ public class MainActivity extends BaseActivity implements ActionMenuView.OnMenuI
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_friends:
+                FriendActivity.start(this);
+                return true;
+
             case R.id.action_logout:
                 showLogoutDialog();
                 return true;
@@ -144,6 +152,7 @@ public class MainActivity extends BaseActivity implements ActionMenuView.OnMenuI
 
     @Subscribe
     public void onLogoutSuccessfulEventReceived(LogoutSuccessfulEvent event) {
+        FriendRequestService.stop(this);
         LoginActivity.start(this);
         finish();
     }

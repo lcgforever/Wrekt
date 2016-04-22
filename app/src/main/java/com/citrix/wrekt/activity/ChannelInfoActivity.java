@@ -95,6 +95,7 @@ public class ChannelInfoActivity extends BaseActivity implements View.OnClickLis
     private Firebase channelRef;
     private String channelId;
     private String channelName;
+    private String channelConfUrl;
     private String adminUid;
     private boolean alreadySubscibed = false;
 
@@ -166,7 +167,9 @@ public class ChannelInfoActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void onPause() {
         super.onPause();
-        channelRef.removeEventListener(channelValueEventListener);
+        if (channelRef != null && channelValueEventListener != null) {
+            channelRef.removeEventListener(channelValueEventListener);
+        }
     }
 
     @Override
@@ -223,7 +226,7 @@ public class ChannelInfoActivity extends BaseActivity implements View.OnClickLis
             case R.id.join_channel_fab:
                 if (alreadySubscibed) {
                     Log.e("findme: ", "Already subscribed to this channel");
-                    ChannelChatActivity.start(ChannelInfoActivity.this, channelId, channelName);
+                    ChannelChatActivity.start(ChannelInfoActivity.this, channelId, channelName, channelConfUrl);
                     finish();
                 } else {
                     showJoinChannelDialog();
@@ -335,7 +338,7 @@ public class ChannelInfoActivity extends BaseActivity implements View.OnClickLis
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                 if (firebaseError == null) {
                     hideJoinProgressDialog();
-                    ChannelChatActivity.start(ChannelInfoActivity.this, channelId, channelName);
+                    ChannelChatActivity.start(ChannelInfoActivity.this, channelId, channelName, channelConfUrl);
                     finish();
                 } else {
                     showJoinChannelFailedMessage(firebaseError.getMessage());
@@ -497,6 +500,7 @@ public class ChannelInfoActivity extends BaseActivity implements View.OnClickLis
             if (dataSnapshot != null && dataSnapshot.exists()) {
                 Map<String, Object> dataMap = (Map<String, Object>) dataSnapshot.getValue();
                 channelName = dataMap.get("name").toString();
+                channelConfUrl = dataMap.get("conferenceUri").toString();
                 adminUid = dataMap.get("adminUid").toString();
                 int memberCount = Integer.parseInt(dataMap.get("memberCount").toString());
                 String category = dataMap.get("category").toString();
@@ -513,7 +517,11 @@ public class ChannelInfoActivity extends BaseActivity implements View.OnClickLis
                 channelNameTextView.setText(String.format(getString(R.string.channel_name_format), channelName));
                 channelCreateTimeTextView.setText(TimeUtils.getFullDate(createTime));
                 channelCategoryTextView.setText(String.format(getString(R.string.channel_category_format), category));
-                channelAdminTextView.setText(String.format(getString(R.string.channel_admin_format), adminName));
+                if (adminUid.equals(uidPref.get())) {
+                    channelAdminTextView.setText(String.format(getString(R.string.channel_admin_format), getString(R.string.sender_me_text)));
+                } else {
+                    channelAdminTextView.setText(String.format(getString(R.string.channel_admin_format), adminName));
+                }
                 channelMemberTextView.setText(String.format(getString(R.string.channel_member_format), memberCount));
                 channelDescriptionTextView.setText(String.format(getString(R.string.channel_description_format), description));
             } else {
